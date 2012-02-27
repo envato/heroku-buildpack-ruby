@@ -48,6 +48,7 @@ class LanguagePack::Ruby < LanguagePack::Base
     install_ruby
     setup_language_pack_environment
     allow_git do
+      install_exiv2_lib
       install_language_pack_gems
       build_bundler
       create_database_yml
@@ -204,6 +205,9 @@ ERROR
       end
       Dir["bin/*"].each {|path| run("chmod 755 #{path}") }
     end
+  end
+
+  def install_exiv2_lib
   end
 
   # default set of binaries to install

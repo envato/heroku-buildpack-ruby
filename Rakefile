@@ -1,7 +1,7 @@
 require "fileutils"
 require "tmpdir"
 
-S3_BUCKET_NAME  = "heroku-buildpack-ruby"
+S3_BUCKET_NAME  = "envato-heroku-stuff"
 VENDOR_URL      = "https://s3.amazonaws.com/#{S3_BUCKET_NAME}"
 
 def s3_tools_dir
@@ -313,6 +313,28 @@ task "libffi:install", :version do |t, args|
         "make install",
         "mv #{prefix}/lib/#{name}/include #{prefix}",
         "rm -rf #{prefix}/lib/#{name}"
+      ].join(" && ")
+
+      sh "vulcan build -v -o #{name}.tgz --source #{name} --command=\"#{build_command}\""
+      s3_upload(tmpdir, name)
+    end
+  end
+end
+
+desc "install exiv2"
+task "exiv2:install" do
+  version = "0.21"
+  name = "exiv2-#{version}"
+  prefix = "/app/vendor/#{name}"
+
+  Dir.mktmpdir("exiv2-") do |tmpdir|
+    Dir.chdir(tmpdir) do |dir|
+      sh "curl http://www.exiv2.org/exiv2-#{version}.tar.gz -s -o - | tar vzxf -"
+      
+      build_command = [
+        "env CFLAGS=-fPIC ./configure --enable-static --disable-shared --prefix=#{prefix}",
+        "make",
+        "make install"
       ].join(" && ")
 
       sh "vulcan build -v -o #{name}.tgz --source #{name} --command=\"#{build_command}\""
