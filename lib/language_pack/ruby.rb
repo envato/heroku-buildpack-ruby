@@ -254,6 +254,7 @@ ERROR
     FileUtils.mkdir_p dir
     Dir.chdir(dir) do |dir|
       run("curl http://s3.envato.com/build-pack/exiv2-built-0.21.tar.gz -s -o - | tar xzf -")
+      puts `find .`
     end
   end
 
