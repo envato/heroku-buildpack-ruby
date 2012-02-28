@@ -286,7 +286,7 @@ ERROR
         libyaml_dir = "#{tmpdir}/#{LIBYAML_PATH}"
         install_libyaml(libyaml_dir)
 
-        exiv2_dir = "#{tmpdir}/exiv2"
+        exiv2_dir = "vendor/exiv2"
         install_exiv2(exiv2_dir)
         exiv2_include = File.expand_path("#{exiv2_dir}/include")
         exiv2_lib = File.expand_path("#{exiv2_dir}/lib")
@@ -297,7 +297,7 @@ ERROR
         pwd            = run("pwd").chomp
         # we need to set BUNDLE_CONFIG and BUNDLE_GEMFILE for
         # codon since it uses bundler.
-        env_vars       = "env BUNDLE_GEMFILE=#{pwd}/Gemfile BUNDLE_CONFIG=#{pwd}/.bundle/config CPATH=#{yaml_include}:#{exiv2_include}:$CPATH CPPPATH=#{yaml_include}:#{exiv2_include}:$CPPPATH CPPFLAGS='-I#{exiv2_include} -fPIC' LIBRARY_PATH=#{exiv2_lib}:#{yaml_lib}:$LIBRARY_PATH LD_LIBRARY_PATH=$LIBRARY_PATH RUBYOPT=\"#{syck_hack}\""
+        env_vars       = "env BUNDLE_GEMFILE=#{pwd}/Gemfile BUNDLE_CONFIG=#{pwd}/.bundle/config CPATH=#{yaml_include}:#{exiv2_include}:$CPATH CPPPATH=#{yaml_include}:#{exiv2_include}:$CPPPATH CXXFLAGS='-I#{exiv2_include} -fPIC -lexpat' LIBRARY_PATH=#{exiv2_lib}:#{yaml_lib}:$LIBRARY_PATH LD_LIBRARY_PATH=$LIBRARY_PATH RUBYOPT=\"#{syck_hack}\""
         puts "Running: #{bundle_command}"
         bundler_output << pipe("#{env_vars} #{bundle_command} --no-clean 2>&1")
 
