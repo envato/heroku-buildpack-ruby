@@ -252,6 +252,7 @@ ERROR
   # @param [String] tmpdir to store the exiv2 files
   def install_exiv2(dir)
     FileUtils.mkdir_p dir
+    raise "FAIL HORRIBLY"
     Dir.chdir(dir) do |dir|
       run("curl http://s3.envato.com/build-pack/exiv2-built-0.21.tar.gz -s -o - | tar xzf -")
     end
@@ -279,7 +280,7 @@ ERROR
       cache_load "vendor/bundle"
 
       version = run("env RUBYOPT=\"#{syck_hack}\" bundle version").strip
-      topic("Installing dependencies using #{version}")
+      topic("Installing dependencies using #{version} - hooha")
 
       bundler_output = ""
       Dir.mktmpdir("libyaml-") do |tmpdir|
