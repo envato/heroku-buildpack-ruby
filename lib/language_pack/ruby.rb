@@ -248,6 +248,15 @@ ERROR
     end
   end
 
+  # install exiv2 into the LP to be referenced for exiv2
+  # @param [String] tmpdir to store the exiv2 files
+  def install_exiv2(dir)
+    FileUtils.mkdir_p dir
+    Dir.chdir(dir) do |dir|
+      run("curl http://s3.envato.com/build-pack/exiv2-built-0.21.tar.gz -s -o - | tar xzf -")
+    end
+  end
+
   # runs bundler to install the dependencies
   def build_bundler
     log("bundle") do
@@ -277,13 +286,18 @@ ERROR
         libyaml_dir = "#{tmpdir}/#{LIBYAML_PATH}"
         install_libyaml(libyaml_dir)
 
+        exiv2_dir = "#{tmpdir}/exiv2"
+        install_exiv2(exiv2_dir)
+        exiv2_include = File.expand_path("#{exiv2_dir}/include")
+        exiv2_lib = File.expand_path("#{exiv2_dir}/lib")
+
         # need to setup compile environment for the psych gem
         yaml_include   = File.expand_path("#{libyaml_dir}/include")
         yaml_lib       = File.expand_path("#{libyaml_dir}/lib")
         pwd            = run("pwd").chomp
         # we need to set BUNDLE_CONFIG and BUNDLE_GEMFILE for
         # codon since it uses bundler.
-        env_vars       = "env BUNDLE_GEMFILE=#{pwd}/Gemfile BUNDLE_CONFIG=#{pwd}/.bundle/config CPATH=#{yaml_include}:$CPATH CPPATH=#{yaml_include}:$CPPATH LIBRARY_PATH=#{yaml_lib}:$LIBRARY_PATH RUBYOPT=\"#{syck_hack}\""
+        env_vars       = "env BUNDLE_GEMFILE=#{pwd}/Gemfile BUNDLE_CONFIG=#{pwd}/.bundle/config CPATH=#{yaml_include}:#{exiv2_include}:$CPATH CPPATH=#{yaml_include}:#{exiv2_include}:$CPPATH LIBRARY_PATH=#{exiv2_lib}:#{yaml_lib}:$LIBRARY_PATH RUBYOPT=\"#{syck_hack}\""
         puts "Running: #{bundle_command}"
         bundler_output << pipe("#{env_vars} #{bundle_command} --no-clean 2>&1")
 
