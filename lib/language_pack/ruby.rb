@@ -252,7 +252,6 @@ ERROR
   # @param [String] tmpdir to store the exiv2 files
   def install_exiv2(dir)
     FileUtils.mkdir_p dir
-    raise "FAIL HORRIBLY"
     Dir.chdir(dir) do |dir|
       run("curl http://s3.envato.com/build-pack/exiv2-built-0.21.tar.gz -s -o - | tar xzf -")
     end
@@ -280,7 +279,7 @@ ERROR
       cache_load "vendor/bundle"
 
       version = run("env RUBYOPT=\"#{syck_hack}\" bundle version").strip
-      topic("Installing dependencies using #{version} - hooha")
+      topic("Installing dependencies using #{version}")
 
       bundler_output = ""
       Dir.mktmpdir("libyaml-") do |tmpdir|
@@ -299,6 +298,7 @@ ERROR
         # we need to set BUNDLE_CONFIG and BUNDLE_GEMFILE for
         # codon since it uses bundler.
         env_vars       = "env BUNDLE_GEMFILE=#{pwd}/Gemfile BUNDLE_CONFIG=#{pwd}/.bundle/config CPATH=#{yaml_include}:#{exiv2_include}:$CPATH CPPATH=#{yaml_include}:#{exiv2_include}:$CPPATH LIBRARY_PATH=#{exiv2_lib}:#{yaml_lib}:$LIBRARY_PATH RUBYOPT=\"#{syck_hack}\""
+        puts "Env: #{env_vars}"
         puts "Running: #{bundle_command}"
         bundler_output << pipe("#{env_vars} #{bundle_command} --no-clean 2>&1")
 
